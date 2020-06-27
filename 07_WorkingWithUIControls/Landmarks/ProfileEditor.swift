@@ -51,30 +51,57 @@ struct ProfileEditor: View {
             }
             .padding(.top)
             
-            Button("Tap Me") {
-//                 self.animationAmount += 1
-            }
-            .padding(40)
-            .background(Color.red)
-            .foregroundColor(.white)
-            .clipShape(Circle())
-            .overlay(
+            ZStack {
+                Button("Tap Me") {
+                    // action not working
+                }
+                .padding(40)
+                .background(Color.red)
+                .foregroundColor(.white)
+                .clipShape(Circle())
+                .onTapGesture {
+                    self.startAnimation.toggle()
+                    self.rotateDegree = self.startAnimation ? 360 : 0
+                    if self.animationAmount > 0 {
+                        self.animationAmount -= 1
+                    }
+                }
+    //            .gesture(
+    //                LongPressGesture(minimumDuration: 0.5, maximumDistance: 10)
+    //                    .onChanged { _ in
+    //                        self.rotateDegree = 360.0
+    //                    }
+    //                    .onEnded {_ in
+    //                        self.rotateDegree = 0.0
+    //                    }
+    //
+    //            )
+                .rotationEffect(Angle(degrees: rotateDegree), anchor: .center)
+                .animation(repeatAnimation)
+                
                 Circle()
                     .stroke(Color.red)
                     .scaleEffect(animationAmount)
                     .opacity(Double(2 - animationAmount))
-                    .animation(
-                        Animation.easeOut(duration: 1)
-                            .repeatForever(autoreverses: false)
-                    )
-            )
-            .onAppear {
-                self.animationAmount = 2
+                    .animation(repeatAnimation)
+                    .onAppear {
+                        self.animationAmount = 2
+                    }
             }
         }
     }
     
+    var repeatAnimation: Animation? {
+        if startAnimation {
+            return Animation.linear(duration: 1).repeatCount(1000, autoreverses: false)
+        } else {
+            return .linear(duration: 0)
+        }
+    }
+    
+    @State private var rotateDegree: Double = 0
     @State private var animationAmount: CGFloat = 1
+    @State private var startAnimation = true
 }
 
 struct ProfileEditor_Previews: PreviewProvider {
